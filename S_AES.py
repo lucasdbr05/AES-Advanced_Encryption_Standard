@@ -1,13 +1,60 @@
 import numpy as np
 
 class S_AES():
-    def __init__(self, key: int) -> None:
+    def __init__(self, key: np.uint16) -> None:
         self._key = key
         self._S_box =  [ 0b1001, 0b0100, 0b1010, 0b1011, 0b1101, 0b0001, 0b1000, 0b0101, 0b0110, 0b0010, 0b0000, 0b0011, 0b1100, 0b1110, 0b1111, 0b0111, ]
         self._S_box_inv = [ 0b1010, 0b0101, 0b1001, 0b1011, 0b0001, 0b0111, 0b1000, 0b1111, 0b0110, 0b0000, 0b0010, 0b0011, 0b1100, 0b0100, 0b1101, 0b1110, ]
         
-        self._k0, self._k1, self._k2 =  self._expand_key(key)
+        self._K0, self._K1, self._K2 =  self._expand_key(key)
 
+    def encrypt_message(self, message: str) -> str:
+        # Padding
+        message += ((len(message)) % 2) * " "
+        result = []
+        for i in range(0, len(message), 2):
+            block = self.convert_string_to_binary(message[i: i+2])
+            data = self.encrypt(block)
+            result.append(data)
+
+        format_bin = lambda x: bin(x)[2:].zfill(16)
+        return ''.join(format_bin(data) for data in result)
+    
+    def encrypt(self, data: np.uint16) -> np.uint16:
+        # Pre-rounds 
+        data = self._add_round_key(data, self._K0)
+
+        # First Round
+        data = self._substitute_nibbles(data)
+        data = self._shift_rows(data)
+        data = self._mix_columns(data)
+        data = self._add_round_key(data, self._K1)
+
+        # Second Round 
+        data = self._substitute_nibbles(data)
+        data = self._shift_rows(data)
+        data = self._add_round_key(data, self._K2)
+
+        return data
+
+    def decrypt(self, data: np.uint16) -> np.uint16:
+        pass
+
+    def int_to_matrix(self, value: np.uint16) -> list[list[int]]:
+        aux = [0, 0, 0, 0]
+        for i in range(4):
+            aux[i] = value & 0xF
+            value >>= 4
+
+        return [[aux[3], aux[1]] , [aux[2],aux[0]]]
+    
+    def matrix_to_int(self, matrix: list[list[int]]) ->  np.int16:
+        return (matrix[0][0] <<12) + (matrix[1][0] << 8) + (matrix[0][1] << 4) + matrix[1][1]
+    
+    def convert_string_to_binary(self, data: str) -> int:
+        data = ''.join(format(ord(i), '08b') for i in data)
+        return int(data, base=2)
+    
     def _substitute_nibbles_in_key_expansion(self, value: np.uint8) -> np.uint8:
             N0 = value & 0b1111
             N1 = (value >> 4) & 0b1111
@@ -56,13 +103,47 @@ class S_AES():
         return new_value
     
     def _shift_rows(self, value: np.int16) -> np.int16:
-        c0, c1 = (value >> 8), (value & 0xFF)
-        m01, m11  = c0 & 0xF, c1 & 0xF
-
-        c0 = c0 ^ m01 ^ m11 
-        c1 = c1 ^ m01 ^ m11 
+        m = self.int_to_matrix(value)
+        c0 = (m[0][0] << 4) + m[1][1]
+        c1 = (m[0][1] << 4) + m[1][0]
         
         return (c0 << 8) + c1
 
+    def _mix_columns(self, value: np.int16) -> np.int16:
+        matrix = self.int_to_matrix(value)
+
+        mixed_columns_matrix = [[0, 0], [0, 0]]
+
+        mixed_columns_matrix[0][0] = matrix[0][0] ^ self._GF_multiplication(4, matrix[1][0])
+        mixed_columns_matrix[0][1] = matrix[0][1] ^ self._GF_multiplication(4, matrix[1][1])
+        mixed_columns_matrix[1][0] = matrix[1][0] ^ self._GF_multiplication(4, matrix[0][0])
+        mixed_columns_matrix[1][1] = matrix[1][1] ^ self._GF_multiplication(4, matrix[0][1])
+
+        return self.matrix_to_int(mixed_columns_matrix)
+
+    def _GF_multiplication(self, x: int, y: int) -> int:
+        """Galois field multiplication of x and y in GF(2^4) / x**4 + x + 1
+        :param x: First number
+        :param y: Second number
+        :return: Multiplication of both under GF(2^4)
+        """
+        result = 0
+
+        x = x & 0x0F
+        y = y & 0x0F
+
+        # While both multiplicands are non-zero
+        while x and y:
+            # If LSB of b is 1
+            if y & 1:
+                result = result ^ x
+            x = x << 1
+
+            # If a overflows beyond 4th bit
+            if x & (1 << 4):
+                # XOR with irreducible polynomial with high term eliminated (x**4 + x + 1)
+                x = x ^ 0b10011
+            y = y >> 1
 
 
+        return result
