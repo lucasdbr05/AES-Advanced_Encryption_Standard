@@ -38,7 +38,22 @@ class S_AES():
         return data
 
     def decrypt(self, data: np.uint16) -> np.uint16:
-        pass
+        # Pre-rounds 
+        data = self._add_round_key(data, self._K2)
+
+        # First Round
+        data = self._shift_rows(data)
+        data = self._inverse_substitute_nibbles(data)
+        data = self._add_round_key(data, self._K1)
+        data = self._inverse_mix_columns(data)
+
+        # Second Round 
+        data = self._shift_rows(data)
+        data = self._inverse_substitute_nibbles(data)
+        data = self._add_round_key(data, self._K0)
+
+        return data
+                
 
     def int_to_matrix(self, value: np.uint16) -> list[list[int]]:
         aux = [0, 0, 0, 0]
@@ -101,6 +116,17 @@ class S_AES():
             value >>= 4
             shift += 4 
         return new_value
+
+    def _inverse_substitute_nibbles(self, value: np.int16) -> np.int16:
+        shift = 0
+        new_value = 0
+        for _ in range(4):
+            current_nibble = value & 0xF
+            current_nibble = self._S_box_inv[current_nibble]
+            new_value += (current_nibble << shift)
+            value >>= 4
+            shift += 4 
+        return new_value
     
     def _shift_rows(self, value: np.int16) -> np.int16:
         m = self.int_to_matrix(value)
@@ -118,6 +144,18 @@ class S_AES():
         mixed_columns_matrix[0][1] = matrix[0][1] ^ self._GF_multiplication(4, matrix[1][1])
         mixed_columns_matrix[1][0] = matrix[1][0] ^ self._GF_multiplication(4, matrix[0][0])
         mixed_columns_matrix[1][1] = matrix[1][1] ^ self._GF_multiplication(4, matrix[0][1])
+
+        return self.matrix_to_int(mixed_columns_matrix)
+    
+    def _inverse_mix_columns(self, value: np.int16) -> np.int16:
+        matrix = self.int_to_matrix(value)
+
+        mixed_columns_matrix = [[0, 0], [0, 0]]
+
+        mixed_columns_matrix[0][0] = self._GF_multiplication(9, matrix[0][0]) ^ self._GF_multiplication(2, matrix[1][0])
+        mixed_columns_matrix[0][1] = self._GF_multiplication(9, matrix[0][1]) ^ self._GF_multiplication(2, matrix[1][1])
+        mixed_columns_matrix[1][0] = self._GF_multiplication(9, matrix[1][0]) ^ self._GF_multiplication(2, matrix[0][0])
+        mixed_columns_matrix[1][1] = self._GF_multiplication(9, matrix[1][1]) ^ self._GF_multiplication(2, matrix[0][1])
 
         return self.matrix_to_int(mixed_columns_matrix)
 
