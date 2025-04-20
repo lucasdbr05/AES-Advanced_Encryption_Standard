@@ -2,11 +2,11 @@ import numpy as np
 
 class S_AES():
     def __init__(self, key: np.uint16) -> None:
-        self._key = key
-        self._S_box =  [ 0b1001, 0b0100, 0b1010, 0b1011, 0b1101, 0b0001, 0b1000, 0b0101, 0b0110, 0b0010, 0b0000, 0b0011, 0b1100, 0b1110, 0b1111, 0b0111, ]
-        self._S_box_inv = [ 0b1010, 0b0101, 0b1001, 0b1011, 0b0001, 0b0111, 0b1000, 0b1111, 0b0110, 0b0000, 0b0010, 0b0011, 0b1100, 0b0100, 0b1101, 0b1110, ]
+        self.__key = key
+        self.__S_box =  [ 0b1001, 0b0100, 0b1010, 0b1011, 0b1101, 0b0001, 0b1000, 0b0101, 0b0110, 0b0010, 0b0000, 0b0011, 0b1100, 0b1110, 0b1111, 0b0111, ]
+        self.__S_box_inv = [ 0b1010, 0b0101, 0b1001, 0b1011, 0b0001, 0b0111, 0b1000, 0b1111, 0b0110, 0b0000, 0b0010, 0b0011, 0b1100, 0b0100, 0b1101, 0b1110, ]
         
-        self._K0, self._K1, self._K2 =  self._expand_key(key)
+        self.__K0, self.__K1, self.__K2 =  self.__expand_key(key)
 
     def encrypt_message(self, message: str) -> str:
         # Padding
@@ -22,35 +22,35 @@ class S_AES():
     
     def encrypt(self, data: np.uint16) -> np.uint16:
         # Pre-rounds 
-        data = self._add_round_key(data, self._K0)
+        data = self.__add_round_key(data, self.__K0)
 
         # First Round
-        data = self._substitute_nibbles(data)
-        data = self._shift_rows(data)
-        data = self._mix_columns(data)
-        data = self._add_round_key(data, self._K1)
+        data = self.__substitute_nibbles(data)
+        data = self.__shift_rows(data)
+        data = self.__mix_columns(data)
+        data = self.__add_round_key(data, self.__K1)
 
         # Second Round 
-        data = self._substitute_nibbles(data)
-        data = self._shift_rows(data)
-        data = self._add_round_key(data, self._K2)
+        data = self.__substitute_nibbles(data)
+        data = self.__shift_rows(data)
+        data = self.__add_round_key(data, self.__K2)
 
         return data
 
     def decrypt(self, data: np.uint16) -> np.uint16:
         # Pre-rounds 
-        data = self._add_round_key(data, self._K2)
+        data = self.__add_round_key(data, self.__K2)
 
         # First Round
-        data = self._shift_rows(data)
-        data = self._inverse_substitute_nibbles(data)
-        data = self._add_round_key(data, self._K1)
-        data = self._inverse_mix_columns(data)
+        data = self.__shift_rows(data)
+        data = self.__inverse_substitute_nibbles(data)
+        data = self.__add_round_key(data, self.__K1)
+        data = self.__inverse_mix_columns(data)
 
         # Second Round 
-        data = self._shift_rows(data)
-        data = self._inverse_substitute_nibbles(data)
-        data = self._add_round_key(data, self._K0)
+        data = self.__shift_rows(data)
+        data = self.__inverse_substitute_nibbles(data)
+        data = self.__add_round_key(data, self.__K0)
 
         return data
                 
@@ -70,20 +70,20 @@ class S_AES():
         data = ''.join(format(ord(i), '08b') for i in data)
         return int(data, base=2)
     
-    def _substitute_nibbles_in_key_expansion(self, value: np.uint8) -> np.uint8:
+    def __substitute_nibbles_in_key_expansion(self, value: np.uint8) -> np.uint8:
             N0 = value & 0b1111
             N1 = (value >> 4) & 0b1111
 
-            return ((self._S_box[N1] << 4) + self._S_box[N0])
+            return ((self.__S_box[N1] << 4) + self.__S_box[N0])
     
-    def _rotate_nibbles(self, value: np.uint8) -> np.uint8:
+    def __rotate_nibbles(self, value: np.uint8) -> np.uint8:
         return ((value >> 4) & 0xF) + ((value << 4) & 0xFF)
 
-    def _G(self, value: np.uint8, round: int) -> np.uint8:
+    def __G(self, value: np.uint8, round: int) -> np.uint8:
         RCON = [0, 0b10000000, 0b00110000]
-        return RCON[round] ^ self._substitute_nibbles_in_key_expansion(self._rotate_nibbles(value))
+        return RCON[round] ^ self.__substitute_nibbles_in_key_expansion(self.__rotate_nibbles(value))
     
-    def _expand_key(self, key: np.uint16) -> tuple[np.uint16]:
+    def __expand_key(self, key: np.uint16) -> tuple[np.uint16]:
         build_key = lambda x0, x1: (x0<<8) + x1  
         
         # Before rounds 
@@ -92,74 +92,74 @@ class S_AES():
         K0 = build_key(W0, W1)
 
         # First round key
-        W2 = W0 ^ self._G(W1, 1)
+        W2 = W0 ^ self.__G(W1, 1)
         W3 = W2 ^ W1
         K1 = build_key(W2, W3)
         
         # Second round key
-        W4 = W2 ^ self._G(W3, 2)
+        W4 = W2 ^ self.__G(W3, 2)
         W5 = W4 ^ W3
         K2 = build_key(W4, W5)
 
         return (K0, K1, K2)
 
-    def _add_round_key(self, data: np.uint16, key: np.uint16):
+    def __add_round_key(self, data: np.uint16, key: np.uint16):
         return data ^ key 
 
-    def _substitute_nibbles(self, value: np.int16) -> np.int16:
+    def __substitute_nibbles(self, value: np.int16) -> np.int16:
         shift = 0
         new_value = 0
         for _ in range(4):
             current_nibble = value & 0xF
-            current_nibble = self._S_box[current_nibble]
+            current_nibble = self.__S_box[current_nibble]
             new_value += (current_nibble << shift)
             value >>= 4
             shift += 4 
         return new_value
 
-    def _inverse_substitute_nibbles(self, value: np.int16) -> np.int16:
+    def __inverse_substitute_nibbles(self, value: np.int16) -> np.int16:
         shift = 0
         new_value = 0
         for _ in range(4):
             current_nibble = value & 0xF
-            current_nibble = self._S_box_inv[current_nibble]
+            current_nibble = self.__S_box_inv[current_nibble]
             new_value += (current_nibble << shift)
             value >>= 4
             shift += 4 
         return new_value
     
-    def _shift_rows(self, value: np.int16) -> np.int16:
+    def __shift_rows(self, value: np.int16) -> np.int16:
         m = self.int_to_matrix(value)
         c0 = (m[0][0] << 4) + m[1][1]
         c1 = (m[0][1] << 4) + m[1][0]
         
         return (c0 << 8) + c1
 
-    def _mix_columns(self, value: np.int16) -> np.int16:
+    def __mix_columns(self, value: np.int16) -> np.int16:
         matrix = self.int_to_matrix(value)
 
         mixed_columns_matrix = [[0, 0], [0, 0]]
 
-        mixed_columns_matrix[0][0] = matrix[0][0] ^ self._GF_multiplication(4, matrix[1][0])
-        mixed_columns_matrix[0][1] = matrix[0][1] ^ self._GF_multiplication(4, matrix[1][1])
-        mixed_columns_matrix[1][0] = matrix[1][0] ^ self._GF_multiplication(4, matrix[0][0])
-        mixed_columns_matrix[1][1] = matrix[1][1] ^ self._GF_multiplication(4, matrix[0][1])
+        mixed_columns_matrix[0][0] = matrix[0][0] ^ self.__GF_multiplication(4, matrix[1][0])
+        mixed_columns_matrix[0][1] = matrix[0][1] ^ self.__GF_multiplication(4, matrix[1][1])
+        mixed_columns_matrix[1][0] = matrix[1][0] ^ self.__GF_multiplication(4, matrix[0][0])
+        mixed_columns_matrix[1][1] = matrix[1][1] ^ self.__GF_multiplication(4, matrix[0][1])
 
         return self.matrix_to_int(mixed_columns_matrix)
     
-    def _inverse_mix_columns(self, value: np.int16) -> np.int16:
+    def __inverse_mix_columns(self, value: np.int16) -> np.int16:
         matrix = self.int_to_matrix(value)
 
         mixed_columns_matrix = [[0, 0], [0, 0]]
 
-        mixed_columns_matrix[0][0] = self._GF_multiplication(9, matrix[0][0]) ^ self._GF_multiplication(2, matrix[1][0])
-        mixed_columns_matrix[0][1] = self._GF_multiplication(9, matrix[0][1]) ^ self._GF_multiplication(2, matrix[1][1])
-        mixed_columns_matrix[1][0] = self._GF_multiplication(9, matrix[1][0]) ^ self._GF_multiplication(2, matrix[0][0])
-        mixed_columns_matrix[1][1] = self._GF_multiplication(9, matrix[1][1]) ^ self._GF_multiplication(2, matrix[0][1])
+        mixed_columns_matrix[0][0] = self.__GF_multiplication(9, matrix[0][0]) ^ self.__GF_multiplication(2, matrix[1][0])
+        mixed_columns_matrix[0][1] = self.__GF_multiplication(9, matrix[0][1]) ^ self.__GF_multiplication(2, matrix[1][1])
+        mixed_columns_matrix[1][0] = self.__GF_multiplication(9, matrix[1][0]) ^ self.__GF_multiplication(2, matrix[0][0])
+        mixed_columns_matrix[1][1] = self.__GF_multiplication(9, matrix[1][1]) ^ self.__GF_multiplication(2, matrix[0][1])
 
         return self.matrix_to_int(mixed_columns_matrix)
 
-    def _GF_multiplication(self, x: int, y: int) -> int:
+    def __GF_multiplication(self, x: int, y: int) -> int:
         """Galois field multiplication of x and y in GF(2^4) / x**4 + x + 1
         :param x: First number
         :param y: Second number
