@@ -64,12 +64,8 @@ class S_AES():
         return [[aux[3], aux[1]] , [aux[2],aux[0]]]
     
     def matrix_to_int(self, matrix: list[list[int]]) ->  np.int16:
-        return (matrix[0][0] <<12) + (matrix[1][0] << 8) + (matrix[0][1] << 4) + matrix[1][1]
-    
-    def convert_string_to_binary(self, data: str) -> int:
-        data = ''.join(format(ord(i), '08b') for i in data)
-        return int(data, base=2)
-    
+        return (matrix[0][0] << 12) + (matrix[1][0] << 8) + (matrix[0][1] << 4) + matrix[1][1]
+
     def __substitute_nibbles_in_key_expansion(self, value: np.uint8) -> np.uint8:
             N0 = value & 0b1111
             N1 = (value >> 4) & 0b1111
