@@ -31,7 +31,7 @@ def decrypt_saes_ecb(text: str, key: np.int16) -> str:
         result = []
         for i in range(0, len(text), 2):
             block = convert_string_to_binary(text[i: i+2])
-            data = s_aes.encrypt(block)
+            data = s_aes.decrypt(block)
             result.append(data)
 
         binary =  ''.join(format_bin(data) for data in result)
