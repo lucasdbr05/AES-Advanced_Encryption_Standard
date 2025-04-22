@@ -3,6 +3,8 @@ import base64
 
 def parse_int_to_string(data: int)-> str:
     return chr(data>>8 & 0xFF) + chr(data & 0xFF)
+def to_base64(data: str) -> str:
+    return base64.b64encode(str(data).encode()).decode()
 
 class Logger:
     @staticmethod
@@ -12,8 +14,8 @@ class Logger:
         print("0: Stop")
         print("1A: encrypt using S-AES")
         print("1B: decrypt using S-AES")
-        print("2: S-AES encryptation with ECB operation mode")
-        print("2: S-AES decryptation with ECB operation mode")
+        print("2A: S-AES encryptation with ECB operation mode")
+        print("2B: S-AES decryptation with ECB operation mode")
         print("3: AES in differents operations mode")
 
 
@@ -29,7 +31,7 @@ class Logger:
         pprint({
             "binary": bin(data)[2:].zfill(16),
             "hexadecimal": hex(data)[2:].zfill(4),
-            "base64": base64.b64encode(str(data).encode()).decode(),
+            "base64": to_base64(data),
             "string": parse_int_to_string(data)
         })
         print()
