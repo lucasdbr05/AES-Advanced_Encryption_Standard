@@ -8,19 +8,13 @@ class S_AES():
         
         self.__K0, self.__K1, self.__K2 =  self.__expand_key(key)
 
-    def encrypt_message(self, message: str) -> str:
-        # Padding
-        message += ((len(message)) % 2) * " "
-        result = []
-        for i in range(0, len(message), 2):
-            block = self.convert_string_to_binary(message[i: i+2])
-            data = self.encrypt(block)
-            result.append(data)
-
-        format_bin = lambda x: bin(x)[2:].zfill(16)
-        return ''.join(format_bin(data) for data in result)
+    def parse_str_to_int(self, data: str) -> np.uint16:
+        return (ord(data[0])<<8) + (ord(data[1]))
     
-    def encrypt(self, data: np.uint16) -> np.uint16:
+    def encrypt(self, data: str) -> np.uint16:
+        # Parse string to bits
+        data = self.parse_str_to_int(data)     
+
         # Pre-rounds 
         data = self.__add_round_key(data, self.__K0)
 
@@ -37,7 +31,11 @@ class S_AES():
 
         return data
 
-    def decrypt(self, data: np.uint16) -> np.uint16:
+    def decrypt(self, data: str) -> np.uint16:
+        # Parse string to bits
+        data = self.parse_str_to_int(data)     
+        
+
         # Pre-rounds 
         data = self.__add_round_key(data, self.__K2)
 

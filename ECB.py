@@ -11,28 +11,26 @@ def padding(text):
 def format_bin (x: str) -> str:
     return bin(x)[2:].zfill(16)
 
-def encrypt_saes_ecb(text: str, key: np.int16) -> str:
+def encrypt_saes_ecb(text: str, key: np.int16) -> list[int]:
         s_aes = S_AES(key)
         text = padding(text)
 
-        result = []
+        blocks = []
         for i in range(0, len(text), 2):
-            block = convert_string_to_binary(text[i: i+2])
+            block = text[i: i+2]
             data = s_aes.encrypt(block)
-            result.append(data)
+            blocks.append(data)
+        
+        return blocks
+        
 
-        binary = ''.join(format_bin(data) for data in result)
-        return binary
+def decrypt_saes_ecb(text: str, key: np.int16) -> list[int]:
+    s_aes = S_AES(key)
+    text = padding(text)
 
-def decrypt_saes_ecb(text: str, key: np.int16) -> str:
-        s_aes = S_AES(key)
-        text = padding(text)
-
-        result = []
-        for i in range(0, len(text), 2):
-            block = convert_string_to_binary(text[i: i+2])
-            data = s_aes.decrypt(block)
-            result.append(data)
-
-        binary =  ''.join(format_bin(data) for data in result)
-        return binary
+    blocks = []
+    for i in range(0, len(text), 2):
+        block = text[i: i+2]
+        data = s_aes.decrypt(block)
+        blocks.append(data) 
+    return blocks
