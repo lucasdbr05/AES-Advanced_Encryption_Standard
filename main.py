@@ -5,6 +5,7 @@ from ECB import encrypt_saes_ecb
 from AES import OperationModes
 
 
+
 def do_command(data: str) -> None:
     if (data == "1A"):
         Logger.print_string("Type S-AES key (hexadecimal):")
@@ -37,8 +38,8 @@ def do_command(data: str) -> None:
         for i in range(len(blocks)):
             Logger.print_block(blocks[i], f"Data for block {i+1}")
     elif (data == "3"):
-        operation_modes = OperationModes("")
-        operation_modes.encrypt("FLUMINENSEGRANDE")
+        operation_modes = OperationModes("Fluminense F.C. ")
+        operation_modes.encrypt("FLUMINENSEGRANDEFLUMINENSEGRANDEFLUMINENSEGRANDEFLUMINENSEGRANDEFLUMINENSEGRANDE")
     else:
         Logger.print_string("Command not found :(")
     

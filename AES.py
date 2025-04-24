@@ -5,9 +5,9 @@ from Crypto.Util import Counter
 
 class OperationModes:
     def __init__(self, key: str) -> None:
-        self.key = b"Fluminense F.C. "
+        self.key = key.encode()
 
-    def encrypt(self, data: str) -> str:
+    def encrypt(self, data: str) -> None:
         data = data.encode()
         print(self.__encrypt_in_ECB(data))
         print(self.__encrypt_in_CBC(data))
