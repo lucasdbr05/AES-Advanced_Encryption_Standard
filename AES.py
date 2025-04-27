@@ -1,3 +1,4 @@
+from Logger import Logger
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
@@ -5,6 +6,8 @@ from Crypto.Util import Counter
 import numpy as np
 from math import log
 from scipy.special import gammaincc
+import time 
+
 
 class AES_OperationModes:
     def __init__(self, key: str) -> None:
@@ -12,11 +15,26 @@ class AES_OperationModes:
 
     def encrypt(self, data: str) -> None:
         data = data.encode()
-        print(self.__encrypt_in_ECB(data))
-        print(self.__encrypt_in_CBC(data))
-        print(self.__encrypt_in_CFB(data))
-        print(self.__encrypt_in_OFB(data))
-        print(self.__encrypt_in_CTR(data))
+        operation_modes = {
+            "ECB": self.__encrypt_in_ECB,
+            "CBC": self.__encrypt_in_CBC,
+            "CFB": self.__encrypt_in_CFB,
+            "OFB": self.__encrypt_in_OFB,
+            "CTR": self.__encrypt_in_CTR,
+        }
+        
+        for (operation_mode, fn) in operation_modes.items(): 
+            start = time.perf_counter()
+            cypher_data = fn(data)
+            end = time.perf_counter()
+            execution_time = end - start
+            aes_data = {
+                "binary": cypher_data,
+                "execution time": execution_time,
+                "entropy": self.approximate_entropy(cypher_data)
+            }
+            Logger.print_aes_data(operation_mode, aes_data)
+            
 
     def __encrypt_in_ECB(self, data: bytes) -> bytes:
         ECB_cipher =  AES.new(self.key, AES.MODE_ECB)
@@ -45,7 +63,7 @@ class AES_OperationModes:
         CTR_cipher = AES.new(self.key, AES.MODE_CTR, counter = counter)
         return CTR_cipher.encrypt(data)
     
-    def approximate_entropy(self, bin_data: str, pattern_length=10):
+    def approximate_entropy(self, data: bytes, pattern_length=10):
         """
         Note that this description is taken from the NIST documentation [1]
         [1] http://csrc.nist.gov/publications/nistpubs/800-22-rev1a/SP800-22rev1a.pdf
@@ -56,6 +74,8 @@ class AES_OperationModes:
         :param pattern_length: the length of the pattern (m)
         :return: the P value
         """
+        bin_data = ''.join(format(byte, '08b') for byte in data)
+
         n = len(bin_data)
         # Add first m+1 bits to the end
         # NOTE: documentation says m-1 bits but that doesnt make sense, or work.

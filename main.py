@@ -2,8 +2,7 @@ from os import system
 from Logger import Logger
 from S_AES import S_AES
 from ECB import encrypt_saes_ecb
-from AES import OperationModes
-
+from AES import AES_OperationModes
 
 
 def do_command(data: str) -> None:
@@ -13,14 +12,14 @@ def do_command(data: str) -> None:
         Logger.print_string("Type data to be encrypted:")
         text = input()
         s_aes = S_AES(key)
-        Logger.print_block(s_aes.encrypt(text))
+        Logger.print_saes_block(s_aes.encrypt(text))
     elif (data == "1B"):
         Logger.print_string("Type S-AES key (hexadecimal):")
         key = int(input(), base=16)
         Logger.print_string("Type data to be decrypted:")
         text = input()
         s_aes = S_AES(key)
-        Logger.print_block(s_aes.encrypt(text))
+        Logger.print_saes_block(s_aes.encrypt(text))
     elif (data == "2A"):
         Logger.print_string("Type S-AES key (hexadecimal):")
         key = int(input(), base=16)
@@ -28,7 +27,7 @@ def do_command(data: str) -> None:
         text = input()
         blocks = encrypt_saes_ecb(text, key)
         for i in range(len(blocks)):
-            Logger.print_block(blocks[i], f"Data for block {i+1}")
+            Logger.print_saes_block(blocks[i], f"Data for block {i+1}")
     elif (data == "2B"):
         Logger.print_string("Type S-AES key (hexadecimal):")
         key = int(input(), base=16)
@@ -36,10 +35,10 @@ def do_command(data: str) -> None:
         Logger.print_string("Type data to be decrypted:")
         blocks = encrypt_saes_ecb(text, key)
         for i in range(len(blocks)):
-            Logger.print_block(blocks[i], f"Data for block {i+1}")
+            Logger.print_saes_block(blocks[i], f"Data for block {i+1}")
     elif (data == "3"):
-        operation_modes = OperationModes("Fluminense F.C. ")
-        operation_modes.encrypt("FLUMINENSEGRANDEFLUMINENSEGRANDEFLUMINENSEGRANDEFLUMINENSEGRANDEFLUMINENSEGRANDE")
+        operation_modes = AES_OperationModes("Fluminense F.C. ")
+        operation_modes.encrypt(1000*"FLUMINENSEGRANDEFLUMINENSEGRANDEFLUMINENSEGRANDEFLUMINENSEGRANDEFLUMINENSEGRANDE")
     else:
         Logger.print_string("Command not found :(")
     

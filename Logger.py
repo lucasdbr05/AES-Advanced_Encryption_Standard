@@ -1,6 +1,6 @@
 from pprint import pprint
 import base64
-
+import time 
 def parse_int_to_string(data: int)-> str:
     return chr(data>>8 & 0xFF) + chr(data & 0xFF)
 def to_base64(data: str) -> str:
@@ -24,7 +24,7 @@ class Logger:
         print(data)
 
     @staticmethod
-    def print_block(data: int, title: str = None) -> None:
+    def print_saes_block(data: int, title: str = None) -> None:
         if(title):
             print(title)
 
@@ -37,5 +37,9 @@ class Logger:
         print()
 
     @staticmethod
-    def print_stream(data: list[int]) -> None:
-        pass
+    def print_aes_data(operation_mode: str, data: str) -> None:
+        print(f"Operation Mode : {operation_mode}")
+        data["base64"] = to_base64(data["binary"])
+        data["execution time"] = f"{data['execution time'] * 1000} miliseconds"    
+        pprint(data)
+        print()
