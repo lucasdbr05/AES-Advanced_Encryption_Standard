@@ -7,7 +7,7 @@ class S_AES():
         self.__S_box_inv = [ 0b1010, 0b0101, 0b1001, 0b1011, 0b0001, 0b0111, 0b1000, 0b1111, 0b0110, 0b0000, 0b0010, 0b0011, 0b1100, 0b0100, 0b1101, 0b1110, ]
         
         self.__K0, self.__K1, self.__K2 =  self.__expand_key(key)
-
+        
     def parse_str_to_int(self, data: str) -> np.uint16:
         return (ord(data[0])<<8) + (ord(data[1]))
     
@@ -131,7 +131,6 @@ class S_AES():
 
     def __mix_columns(self, value: np.int16) -> np.int16:
         matrix = self.int_to_matrix(value)
-
         mixed_columns_matrix = [[0, 0], [0, 0]]
 
         mixed_columns_matrix[0][0] = matrix[0][0] ^ self.__GF_multiplication(4, matrix[1][0])
@@ -154,7 +153,7 @@ class S_AES():
         return self.matrix_to_int(mixed_columns_matrix)
 
     def __GF_multiplication(self, x: int, y: int) -> int:
-        """Galois field multiplication of x and y in GF(2^4) / x**4 + x + 1
+        """Galois field multiplication of x and y in GF(2^4) (mod 2**4 + 2 + 1)
         :param x: First number
         :param y: Second number
         :return: Multiplication of both under GF(2^4)
