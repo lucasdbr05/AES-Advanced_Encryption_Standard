@@ -1,4 +1,5 @@
 import numpy as np
+from Utils import parse_str_to_int, int_to_nibble_matrix, nibble_matrix_to_int
 
 class S_AES():
     def __init__(self, key: np.uint16) -> None:
@@ -7,13 +8,11 @@ class S_AES():
         self.__S_box_inv = [ 0b1010, 0b0101, 0b1001, 0b1011, 0b0001, 0b0111, 0b1000, 0b1111, 0b0110, 0b0000, 0b0010, 0b0011, 0b1100, 0b0100, 0b1101, 0b1110, ]
         
         self.__K0, self.__K1, self.__K2 =  self.__expand_key(key)
-        
-    def parse_str_to_int(self, data: str) -> np.uint16:
-        return (ord(data[0])<<8) + (ord(data[1]))
+
     
     def encrypt(self, data: str) -> np.uint16:
         # Parse string to bits
-        data = self.parse_str_to_int(data)     
+        data = parse_str_to_int(data)     
 
         # Pre-rounds 
         data = self.__add_round_key(data, self.__K0)
@@ -30,10 +29,10 @@ class S_AES():
         data = self.__add_round_key(data, self.__K2)
 
         return data
-
+    
     def decrypt(self, data: str) -> np.uint16:
         # Parse string to bits
-        data = self.parse_str_to_int(data)     
+        data = parse_str_to_int(data)     
         
 
         # Pre-rounds 
@@ -52,17 +51,6 @@ class S_AES():
 
         return data
                 
-
-    def int_to_matrix(self, value: np.uint16) -> list[list[int]]:
-        aux = [0, 0, 0, 0]
-        for i in range(4):
-            aux[i] = value & 0xF
-            value >>= 4
-
-        return [[aux[3], aux[1]] , [aux[2],aux[0]]]
-    
-    def matrix_to_int(self, matrix: list[list[int]]) ->  np.int16:
-        return (matrix[0][0] << 12) + (matrix[1][0] << 8) + (matrix[0][1] << 4) + matrix[1][1]
 
     def __substitute_nibbles_in_key_expansion(self, value: np.uint8) -> np.uint8:
             N0 = value & 0b1111
@@ -123,14 +111,14 @@ class S_AES():
         return new_value
     
     def __shift_rows(self, value: np.int16) -> np.int16:
-        m = self.int_to_matrix(value)
+        m = int_to_nibble_matrix(value)
         c0 = (m[0][0] << 4) + m[1][1]
         c1 = (m[0][1] << 4) + m[1][0]
         
         return (c0 << 8) + c1
 
     def __mix_columns(self, value: np.int16) -> np.int16:
-        matrix = self.int_to_matrix(value)
+        matrix = int_to_nibble_matrix(value)
         mixed_columns_matrix = [[0, 0], [0, 0]]
 
         mixed_columns_matrix[0][0] = matrix[0][0] ^ self.__GF_multiplication(4, matrix[1][0])
@@ -138,10 +126,10 @@ class S_AES():
         mixed_columns_matrix[1][0] = matrix[1][0] ^ self.__GF_multiplication(4, matrix[0][0])
         mixed_columns_matrix[1][1] = matrix[1][1] ^ self.__GF_multiplication(4, matrix[0][1])
 
-        return self.matrix_to_int(mixed_columns_matrix)
+        return nibble_matrix_to_int(mixed_columns_matrix)
     
     def __inverse_mix_columns(self, value: np.int16) -> np.int16:
-        matrix = self.int_to_matrix(value)
+        matrix = int_to_nibble_matrix(value)
 
         mixed_columns_matrix = [[0, 0], [0, 0]]
 
@@ -150,7 +138,7 @@ class S_AES():
         mixed_columns_matrix[1][0] = self.__GF_multiplication(9, matrix[1][0]) ^ self.__GF_multiplication(2, matrix[0][0])
         mixed_columns_matrix[1][1] = self.__GF_multiplication(9, matrix[1][1]) ^ self.__GF_multiplication(2, matrix[0][1])
 
-        return self.matrix_to_int(mixed_columns_matrix)
+        return nibble_matrix_to_int(mixed_columns_matrix)
 
     def __GF_multiplication(self, x: int, y: int) -> int:
         """Galois field multiplication of x and y in GF(2^4) (mod 2**4 + 2 + 1)

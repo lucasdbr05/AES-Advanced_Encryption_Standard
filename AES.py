@@ -7,7 +7,7 @@ import numpy as np
 from math import log
 from scipy.special import gammaincc
 import time 
-
+from Utils import to_base64
 
 class AES_OperationModes:
     def __init__(self, key: str) -> None:

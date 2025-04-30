@@ -1,11 +1,6 @@
 from pprint import pprint
-import base64
 import time 
-def parse_int_to_string(data: int)-> str:
-    return chr(data>>8 & 0xFF) + chr(data & 0xFF)
-def to_base64(data: str) -> str:
-    return base64.b64encode(str(data).encode()).decode()
-
+from Utils import parse_int_to_string, to_base64
 class Logger:
     @staticmethod
     def start() -> None:
