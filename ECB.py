@@ -33,6 +33,7 @@ def encrypt_saes_ecb(text: str, key: np.int16) -> str:
     # Combine all encrypted blocks into a single binary string
     return "".join(format_bin(block) for block in blocks)
 
+
 def decrypt_saes_ecb(text: str, key: np.int16) -> str:
     """
     Decrypts a given text using the Simplified AES (S-AES) algorithm in ECB mode.
@@ -40,8 +41,7 @@ def decrypt_saes_ecb(text: str, key: np.int16) -> str:
         text (str): The input text to be decrypted. It should be a string of characters.
         key (np.int16): The encryption key used for decryption, represented as a 16-bit integer.
     Returns:
-        str: the original plaintext resulting in ECB mode decryptation
-        
+        str: the original plaintext resulting in ECB mode decryptation 
     """
     # Initialize the S-AES instance with the provided key
     s_aes = S_AES(key)
