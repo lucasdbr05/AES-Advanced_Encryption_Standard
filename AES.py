@@ -35,35 +35,44 @@ class AES_OperationModes:
             }
             Logger.print_aes_data(operation_mode, aes_data)
             
-
     def __encrypt_in_ECB(self, data: bytes) -> bytes:
-        ECB_cipher =  AES.new(self.key, AES.MODE_ECB)
-        data = pad(data, AES.block_size)
+        # Encrypts the data using AES in ECB (Electronic Codebook) mode.
+        # This mode divides the plaintext into blocks and encrypts each block independently.
+        ECB_cipher = AES.new(self.key, AES.MODE_ECB)
+        data = pad(data, AES.block_size)  # Pads the data to ensure it is a multiple of the block size.
         return ECB_cipher.encrypt(data)
     
     def __encrypt_in_CBC(self, data: bytes) -> bytes:
-        iv = get_random_bytes(AES.block_size)
-        CBC_cipher = AES.new(self.key, AES.MODE_CBC, iv = iv)
-        data = pad(data, AES.block_size)
+        # Encrypts the data using AES in CBC (Cipher Block Chaining) mode.
+        # This mode uses an initialization vector (IV) and chains the encryption of blocks to improve security.
+        iv = get_random_bytes(AES.block_size)  # Generates a random IV for encryption.
+        CBC_cipher = AES.new(self.key, AES.MODE_CBC, iv=iv)
+        data = pad(data, AES.block_size)  # Pads the data to ensure it is a multiple of the block size.
         return CBC_cipher.encrypt(data)
 
     def __encrypt_in_CFB(self, data: bytes) -> bytes:
-        iv = get_random_bytes(AES.block_size)
-        CFB_cipher = AES.new(self.key, AES.MODE_CFB, iv = iv)
-        data = pad(data, AES.block_size)
+        # Encrypts the data using AES in CFB (Cipher Feedback) mode.
+        # This mode allows encryption of data in smaller units than the block size.
+        iv = get_random_bytes(AES.block_size)  # Generates a random IV for encryption.
+        CFB_cipher = AES.new(self.key, AES.MODE_CFB, iv=iv)
+        data = pad(data, AES.block_size)  # Pads the data to ensure it is a multiple of the block size.
         return CFB_cipher.encrypt(data)
 
     def __encrypt_in_OFB(self, data: bytes) -> bytes:
-        iv = get_random_bytes(AES.block_size)
-        OFB_cipher = AES.new(self.key, AES.MODE_OFB, iv = iv)
+        # Encrypts the data using AES in OFB (Output Feedback) mode.
+        # This mode turns a block cipher into a synchronous stream cipher.
+        iv = get_random_bytes(AES.block_size)  # Generates a random IV for encryption.
+        OFB_cipher = AES.new(self.key, AES.MODE_OFB, iv=iv)
         return OFB_cipher.encrypt(data)
 
     def __encrypt_in_CTR(self, data: bytes) -> bytes:
-        counter = Counter.new(nbits=128)
-        CTR_cipher = AES.new(self.key, AES.MODE_CTR, counter = counter)
+        # Encrypts the data using AES in CTR (Counter) mode.
+        # This mode uses a counter value that is incremented for each block, ensuring unique encryption for each block.
+        counter = Counter.new(nbits=128)  # Creates a counter object for CTR mode.
+        CTR_cipher = AES.new(self.key, AES.MODE_CTR, counter=counter)
         return CTR_cipher.encrypt(data)
-    
-    def approximate_entropy(self, data: bytes, pattern_length=10):
+        
+    def approximate_entropy(self, data: bytes, pattern_length=10) -> float:
         """
         Note that this description is taken from the NIST documentation [1]
         [1] http://csrc.nist.gov/publications/nistpubs/800-22-rev1a/SP800-22rev1a.pdf
@@ -106,4 +115,4 @@ class AES_OperationModes:
         ape = sums[0] - sums[1]
         chi_squared = 2.0 * n * (log(2) - ape)
         p_val = gammaincc(pow(2, pattern_length-1), chi_squared/2.0)
-        return p_val
+        return float(p_val)
