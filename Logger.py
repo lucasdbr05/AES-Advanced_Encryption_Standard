@@ -1,6 +1,6 @@
 from pprint import pprint
 import time 
-from Utils import parse_int_to_string, to_base64
+from Utils import parse_int_to_string, to_base64, int_to_nibble_matrix
 class Logger:
     @staticmethod
     def start() -> None:
@@ -37,4 +37,18 @@ class Logger:
         data["base64"] = to_base64(data["binary"])
         data["execution time"] = f"{data['execution time'] * 1000} miliseconds"    
         pprint(data)
+        print()
+
+    @staticmethod
+    def print_saes_block_with_nibbles_matrix(data: int, title: str = None) -> None:
+        if(title):
+            print(title)
+
+        pprint({
+            "binary": bin(data)[2:].zfill(16),
+            "hexadecimal": hex(data)[2:].zfill(4),
+            "base64": to_base64(data),
+            "nibbles matrix": int_to_nibble_matrix(data),
+            "string": parse_int_to_string(data)
+        })
         print()

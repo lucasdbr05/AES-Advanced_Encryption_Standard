@@ -1,5 +1,6 @@
 import numpy as np
 from Utils import parse_str_to_int, int_to_nibble_matrix, nibble_matrix_to_int
+from Logger import Logger
 
 class S_AES():
     def __init__(self, key: np.uint16) -> None:
@@ -16,17 +17,21 @@ class S_AES():
 
         # Pre-rounds 
         data = self.__add_round_key(data, self.__K0)
-
+        Logger.print_saes_block_with_nibbles_matrix(data, "Pre round")
+        
         # First Round
         data = self.__substitute_nibbles(data)
         data = self.__shift_rows(data)
         data = self.__mix_columns(data)
         data = self.__add_round_key(data, self.__K1)
+        Logger.print_saes_block_with_nibbles_matrix(data, "First round")
 
         # Second Round 
         data = self.__substitute_nibbles(data)
         data = self.__shift_rows(data)
         data = self.__add_round_key(data, self.__K2)
+
+        Logger.print_saes_block_with_nibbles_matrix(data, "Second round")
 
         return data
     
@@ -37,17 +42,20 @@ class S_AES():
 
         # Pre-rounds 
         data = self.__add_round_key(data, self.__K2)
+        Logger.print_saes_block_with_nibbles_matrix(data, "Pre round")
 
         # First Round
         data = self.__shift_rows(data)
         data = self.__inverse_substitute_nibbles(data)
         data = self.__add_round_key(data, self.__K1)
         data = self.__inverse_mix_columns(data)
+        Logger.print_saes_block_with_nibbles_matrix(data, "First round")
 
         # Second Round 
         data = self.__shift_rows(data)
         data = self.__inverse_substitute_nibbles(data)
         data = self.__add_round_key(data, self.__K0)
+        Logger.print_saes_block_with_nibbles_matrix(data, "Second round")
 
         return data
                 
