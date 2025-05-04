@@ -3,9 +3,10 @@ import time
 from Utils import parse_int_to_string, to_base64, int_to_nibble_matrix
 class Logger:
     @staticmethod
-    def start() -> None:
+    def start(is_from_user:bool) -> None:
         print("Options:")
         print()
+        print(f"T: change input origin for {"user" if not is_from_user else "default"} inputs")
         print("0: Stop")
         print("1A: encrypt using S-AES")
         print("1B: decrypt using S-AES")

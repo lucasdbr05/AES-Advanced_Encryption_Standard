@@ -34,6 +34,7 @@ class AES_OperationModes:
                 "entropy": self.approximate_entropy(cypher_data)
             }
             Logger.print_aes_data(operation_mode, aes_data)
+            print(" -"*20)
             
     def __encrypt_in_ECB(self, data: bytes) -> bytes:
         # Encrypts the data using AES in ECB (Electronic Codebook) mode.
