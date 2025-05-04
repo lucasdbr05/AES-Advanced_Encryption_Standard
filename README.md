@@ -15,7 +15,6 @@ py main.py
 
 1. **S-AES**:
    - Encryption and decryption using the S-AES algorithm.
-   - Support for key and data input in hexadecimal format.
 
 2. **ECB Mode with S-AES**:
    - Encryption and decryption of text blocks in ECB mode using S-AES.
