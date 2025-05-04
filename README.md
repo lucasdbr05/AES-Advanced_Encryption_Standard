@@ -1,65 +1,64 @@
 # AES - Advanced Encryption Standard
 
-Este projeto implementa o algoritmo AES (Advanced Encryption Standard) em diferentes modos de operação, além de uma versão simplificada chamada S-AES. Ele também inclui funcionalidades para criptografia e descriptografia no modo ECB usando o S-AES.
+This project implements the AES (Advanced Encryption Standard) algorithm in different modes of operation, as well as a simplified version called S-AES. It also includes functionalities for encryption and decryption in ECB mode using S-AES.
 
-## Como executar
+## How to Run
 
-Para instalar as dependências e executar o programa principal, utilize os seguintes comandos:
+To install the dependencies and run the main program, use the following commands:
 
 ```shell
 pip install pycryptodome numpy scipy
 py main.py
 ```
 
-## Funcionalidades
+## Features
 
 1. **S-AES**:
-   - Criptografia e descriptografia usando o algoritmo S-AES.
-   - Suporte para entrada de chaves e dados em formato hexadecimal.
+   - Encryption and decryption using the S-AES algorithm.
+   - Support for key and data input in hexadecimal format.
 
-2. **Modo ECB com S-AES**:
-   - Criptografia e descriptografia de blocos de texto no modo ECB usando o S-AES.
+2. **ECB Mode with S-AES**:
+   - Encryption and decryption of text blocks in ECB mode using S-AES.
 
-3. **AES em diferentes modos de operação**:
-   - Implementação dos modos de operação: ECB, CBC, CFB, OFB e CTR.
-   - Cálculo de entropia aproximada e tempo de execução para cada modo.
+3. **AES in Different Modes of Operation**:
+   - Implementation of operation modes: ECB, CBC, CFB, OFB, and CTR.
+   - Approximate entropy calculation and execution time for each mode.
 
-## Opções do Menu
+## Menu Options
 
-- `0`: Encerrar o programa.
-- `1A`: Criptografar usando S-AES.
-- `1B`: Descriptografar usando S-AES.
-- `2A`: Criptografar no modo ECB usando S-AES.
-- `2B`: Descriptografar no modo ECB usando S-AES.
-- `3`: Executar o AES nos diferentes modos de operação.
+- `T`: Change the input source to come from the user or default files.
+- `0`: Exit the program.
+- `1A`: Encrypt using S-AES.
+- `1B`: Decrypt using S-AES.
+- `2A`: Encrypt in ECB mode using S-AES.
+- `2B`: Decrypt in ECB mode using S-AES.
+- `3`: Run AES in different modes of operation.
 
+## Project Structure
 
-## Estrutura do Projeto
+- `main.py`: Main file that manages the menu and user interactions.
+- `AES.py`: Implementation of AES with support for different modes of operation.
+- `S_AES.py`: Implementation of the simplified S-AES algorithm.
+- `ECB.py`: Functions for encryption and decryption in ECB mode using S-AES.
+- `Logger.py`: Utility class for displaying formatted information in the console.
 
-- `main.py`: Arquivo principal que gerencia o menu e as interações do usuário.
-- `AES.py`: Implementação do AES com suporte a diferentes modos de operação.
-- `S_AES.py`: Implementação do algoritmo simplificado S-AES.
-- `ECB.py`: Funções para criptografia e descriptografia no modo ECB usando S-AES.
-- `Logger.py`: Classe utilitária para exibir informações formatadas no console.
+## Usage Example
 
-## Exemplo de Uso
+### Encryption with S-AES
+1. Select option `1A` in the menu.
+2. Enter the key in hexadecimal format.
+3. Enter the text to be encrypted.
 
-### Criptografia com S-AES
-1. Escolha a opção `1A` no menu.
-2. Insira a chave em formato hexadecimal.
-3. Insira o texto a ser criptografado.
+### S-AES in Electronic Code Book Mode (ECB)
+1. Select option `2A` in the menu.
+2. Enter the key in hexadecimal format.
+3. Enter the text to be encrypted.
 
-### S-AES em Electronic Code Book Mode (ECB)
-1. Escolha a opção `2A` no menu.
-2. Insira a chave em formato hexadecimal.
-3. Insira o texto a ser criptografado.
+### AES in Operation Modes
+1. Select option `3` in the menu.
+2. The program will display the results for each mode of operation, including execution time and entropy.
 
-### AES em Modos de Operação
-1. Escolha a opção `3` no menu.
-2. O programa exibirá os resultados para cada modo de operação, incluindo o tempo de execução e a entropia.
-
-
-<h2>💻 Autores</h2>
+<h2>💻 Authors</h2>
 
 <table>
   <tr>
