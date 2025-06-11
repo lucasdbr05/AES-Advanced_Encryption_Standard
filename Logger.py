@@ -10,9 +10,10 @@ class Logger:
         print("0: Stop")
         print("1A: encrypt using S-AES")
         print("1B: decrypt using S-AES")
-        print("2A: S-AES encryptation with ECB operation mode")
-        print("2B: S-AES decryptation with ECB operation mode")
-        print("3: AES in differents operations mode")
+        print("2A: S-AES encryption with ECB operation mode")
+        print("2B: S-AES decryption with ECB operation mode")
+        print("2C: S-AES identical blocks comparison")
+        print("3: AES in different operation modes")
 
 
     @staticmethod

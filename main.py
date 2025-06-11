@@ -1,7 +1,7 @@
 from os import system
 from Logger import Logger
 from S_AES import S_AES
-from ECB import encrypt_saes_ecb, decrypt_saes_ecb
+from ECB import encrypt_saes_ecb, decrypt_saes_ecb, identic_blocs_comparison
 from AES import AES_OperationModes
 
 def get_input(from_user: bool, file_path: str = None) -> str:
@@ -41,6 +41,8 @@ def do_command(data: str, from_user: bool) -> None:
         text = get_input(from_user, "inputs/2_b_text.txt")
         text = decrypt_saes_ecb(text, key)
         Logger.print_saes_block(int(text, base=2), "Final ECB operation message decryption")
+    elif (data == "2C"):
+        identic_blocs_comparison()
     elif (data == "3"):
         Logger.print_string("Type AES key (string 16 bytes):")
         key = get_input(from_user, "inputs/3_key.txt")
