@@ -31,6 +31,7 @@ py main.py
 - `1B`: Decrypt using S-AES.
 - `2A`: Encrypt in ECB mode using S-AES.
 - `2B`: Decrypt in ECB mode using S-AES.
+- `2C`: Identic messages comparison with ECB mode using S-AES.
 - `3`: Run AES in different modes of operation.
 
 ## Project Structure
